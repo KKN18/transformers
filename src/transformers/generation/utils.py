@@ -2557,6 +2557,7 @@ class GenerationMixin:
         ['Today is a beautiful day, and we must do everything possible to make it a day of celebration.']
         ```"""
         # init values
+        assert(0)
         logits_processor = logits_processor if logits_processor is not None else LogitsProcessorList()
         stopping_criteria = stopping_criteria if stopping_criteria is not None else StoppingCriteriaList()
         if max_length is not None:
