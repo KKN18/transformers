@@ -2323,6 +2323,9 @@ class GenerationMixin:
         unfinished_sequences = torch.ones(input_ids.shape[0], dtype=torch.long, device=input_ids.device)
 
         this_peer_finished = False  # used by synced_gpus only
+        isFirst = True
+        elhs = None
+        
         while True:
             if synced_gpus:
                 # Under synced_gpus the `forward` call must continue until all gpus complete their sequence.
@@ -2345,6 +2348,11 @@ class GenerationMixin:
                 output_hidden_states=output_hidden_states,
             )
 
+            # Retrieve last hidden state of encoder
+            if isFirst:
+                elhs = outputs.encoder_last_hidden_state
+                isFirst = False
+            
             if synced_gpus and this_peer_finished:
                 continue  # don't waste resources running the code we don't need
 
@@ -2410,7 +2418,7 @@ class GenerationMixin:
 
         if return_dict_in_generate:
             if self.config.is_encoder_decoder:
-                return GreedySearchEncoderDecoderOutput(
+                return elhs, GreedySearchEncoderDecoderOutput(
                     sequences=input_ids,
                     scores=scores,
                     encoder_attentions=encoder_attentions,
@@ -2420,14 +2428,14 @@ class GenerationMixin:
                     decoder_hidden_states=decoder_hidden_states,
                 )
             else:
-                return GreedySearchDecoderOnlyOutput(
+                return elhs, GreedySearchDecoderOnlyOutput(
                     sequences=input_ids,
                     scores=scores,
                     attentions=decoder_attentions,
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return input_ids
+            return elhs, input_ids
 
     def sample(
         self,
