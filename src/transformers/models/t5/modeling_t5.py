@@ -1670,7 +1670,6 @@ class T5ForConditionalGeneration(T5PreTrainedModel):
         >>> print(tokenizer.decode(outputs[0], skip_special_tokens=True))
         >>> # studies have shown that owning a dog is good for you.
         ```"""
-        assert(0)
         use_cache = use_cache if use_cache is not None else self.config.use_cache
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
